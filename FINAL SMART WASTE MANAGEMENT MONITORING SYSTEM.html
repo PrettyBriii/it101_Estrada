@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay San Joaquin - Smart Waste Monitoring System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            align-items: stretch;
+            justify-content: stretch;
+            overflow: hidden;
+        }
+
+        /* App Section Panels Container Frame - Expanded to fill entire screen */
+        .app-section {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            position: relative;
+            flex-direction: column;
+        }
+
+        .app-section.active-section {
+            display: flex;
+        }
+
+        /* Top Header Bar */
+        .top-bar {
+            width: 100%;
+            height: 55px;
+            background: linear-gradient(90deg, #071930 0%, #0b2341 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: #ffffff;
+            z-index: 10;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .header-title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            letter-spacing: 0.8px;
+            color: #b0c4de;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .badge-dot, .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background-color: #ff3b30;
+            border-radius: 50%;
+        }
+
+        /* Popout Flyout Overlays */
+        .header-popout {
+            position: absolute;
+            top: 55px;
+            right: 20px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+            color: #1e293b;
+        }
+
+        .header-popout.active {
+            display: flex;
+        }
+
+        #notification-popout {
+            width: 320px;
+            max-height: 400px;
+        }
+
+        .popout-header {
+            background: #0b2341;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notification-list {
+            overflow-y: auto;
+            max-height: 340px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .notification-item:hover {
+            background: #f8fafc;
+        }
+
+        .notif-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .notif-time {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .notif-desc {
+            font-size: 11px;
+            color: #334155;
+            line-height: 1.3;
+        }
+
+        /* Profile Admin Management Popout */
+        #profile-popout {
+            width: 420px;
+            background: #e2e8f0;
+            border: 3px solid #1e3a8a;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .profile-popout-inner {
+            background: #ffffff;
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-popout-topbar {
+            background: linear-gradient(180deg, #071930 0%, #0b2341 100%);
+            color: #ffffff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin: -16px -16px 10px -16px;
+        }
+
+        .profile-popout-topbar h4 {
+            font-size: 12px;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-popout-topbar h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .profile-main-layout {
+            display: flex;
+            gap: 15px;
+        }
+
+        .profile-left-col {
+            width: 140px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            border-right: 1px solid #cbd5e1;
+            padding-right: 12px;
+        }
+
+        .profile-avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: #fde047;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .profile-section-block {
+            width: 100%;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            text-align: center;
+        }
+
+        .profile-right-col {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .profile-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .profile-field-group label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .profile-input-field {
+            width: 100%;
+            padding: 5px 8px;
+            font-size: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            background: #f8fafc;
+            color: #0f172a;
+        }
+
+        .profile-sub-box {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: #fafafa;
+        }
+
+        .profile-sub-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .profile-toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .mini-switch {
+            position: relative;
+            display: inline-block;
+            width: 32px;
+            height: 16px;
+        }
+
+        .mini-switch input { opacity: 0; width: 0; height: 0; }
+        .mini-slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #cbd5e1; transition: .2s; border-radius: 16px;
+        }
+        .mini-slider:before {
+            position: absolute; content: ""; height: 12px; width: 12px; left: 2px; bottom: 2px;
+            background-color: white; transition: .2s; border-radius: 50%;
+        }
+        input:checked + .mini-slider { background-color: #2563eb; }
+        input:checked + .mini-slider:before { transform: translateX(16px); }
+
+        .profile-action-link {
+            font-size: 10px;
+            color: #2563eb;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Dashboard Body Layout */
+        .dashboard-body {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100% - 55px);
+            overflow: hidden;
+        }
+
+        /* Left Navigation Sidebar with Logo1 at top & pushed down buttons */
+        .left-sidebar {
+            width: 200px;
+            background: linear-gradient(180deg, #0b2341 0%, #030a14 100%);
+            display: flex;
+            flex-direction: column;
+            padding: 10px 10px 15px 10px;
+            gap: 6px;
+            border-right: 1px solid #05101f;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-crest-logo {
+            width: 75px;
+            height: auto;
+            object-fit: contain;
+            margin-bottom: 4px;
+        }
+
+        .nav-button, .nav-item {
+            width: 100%;
+            height: 38px;
+            background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+            border: 1px solid #94a3b8;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 10px;
+            text-decoration: none;
+            color: #1e293b;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .nav-button:hover, .nav-item:hover {
+            background: linear-gradient(180deg, #cbd5e1 100%, #b2c2d4 0%);
+        }
+
+        .nav-button.active, .nav-item.active {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            border-left: 4px solid #0b2341;
+            color: #1e293b;
+        }
+
+        .nav-button svg, .nav-item svg {
+            width: 16px;
+            height: 16px;
+            fill: #334155;
+            flex-shrink: 0;
+        }
+
+        /* Right Content Area */
+        .right-content {
+            flex-grow: 1;
+            padding: 25px 30px;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        /* COMMON TABLES */
+        .personnel-table, .schedule-table, .priority-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .personnel-table th, .schedule-table th, .priority-table th {
+            background-color: #f8fafc;
+            color: #334155;
+            font-weight: 700;
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 2px solid #cbd5e1;
+            border-top: 1px solid #cbd5e1;
+        }
+
+        .personnel-table td, .schedule-table td, .priority-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        .personnel-table tr:hover, .schedule-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .action-icons, .action-cell {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .action-icon {
+            width: 16px;
+            height: 16px;
+            fill: #64748b;
+            cursor: pointer;
+        }
+
+        /* 1. LOGIN SECTION */
+        #login-section {
+            width: 100%;
+            height: 100%;
+            background: #f4f4f4;
+            flex-direction: row;
+        }
+        .login-left-banner {
+            width: 380px;
+            background: linear-gradient(180deg, #0b2341 0%, #030a14 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 4px 0px 15px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+        .login-crest-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 15px;
+            object-fit: contain;
+        }
+        .banner-title {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .banner-subtitle {
+            color: #a0aec0;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .login-right-area {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        .login-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border: 1px solid #dcdcdc;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+            border-radius: 4px;
+        }
+        .login-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eaeaea;
+            padding-bottom: 15px;
+        }
+        .login-header h2 {
+            font-size: 18px;
+            letter-spacing: 2px;
+            color: #222222;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+        .input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-container input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            font-size: 13px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            outline: none;
+            background: #fafafa;
+        }
+        .input-icon {
+            position: absolute;
+            left: 10px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.4;
+        }
+        .sign-in-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #0b2341;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .sign-in-btn:hover { background-color: #123563; }
+
+        /* 2. HOME SECTION */
+        #home-section {
+            background-color: #f7f7f7;
+        }
+        .home-sidebar {
+            width: 320px;
+            background: linear-gradient(180deg, #0b2341 0%, #030a14 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .home-crest-logo {
+            width: 160px;
+            height: auto;
+            margin-bottom: 16px;
+            object-fit: contain;
+        }
+        .home-main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            gap: 16px;
+        }
+        .btn-home {
+            width: 270px;
+            height: 52px;
+            background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+            border: 1px solid #94a3b8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #1e293b;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        .menu-btn {
+            width: 210px;
+            height: 48px;
+            background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
+            border: 1px solid #94a3b8;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            gap: 14px;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 3. PERSONNELS SECTION */
+        .view-panel {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+        .view-panel.active { display: flex; }
+        .page-title { font-size: 24px; font-weight: 700; color: #0f172a; }
+        .add-personnels-btn {
+            background: linear-gradient(180deg, #071930 0%, #0b2341 100%);
+            color: white; border: none; padding: 12px 24px; border-radius: 8px;
+            font-size: 15px; font-weight: 600; cursor: pointer; width: max-content;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px;
+        }
+        .updated-list-badge {
+            background: linear-gradient(180deg, #071930 0%, #0b2341 100%);
+            color: white; padding: 10px 24px; border-radius: 8px; font-size: 20px;
+            font-weight: 700; width: max-content; box-shadow: 0 4px 8px rgba(0,0,0,0.2); letter-spacing: 1px;
+        }
+        .user-cell { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .user-info small { display: block; color: #64748b; }
+        .status-pill { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+        .status-dot { width: 8px; height: 8px; background-color: #16a34a; border-radius: 50%; }
+        
+        .modal-container-box { display: flex; align-items: center; justify-content: center; height: 100%; gap: 20px; }
+        .personnel-card-frame {
+            width: 580px; height: 420px; background: #e2e8f0; border: 3px solid #1e3a8a;
+            border-radius: 10px; padding: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative;
+        }
+        .personnel-card-inner {
+            background: #ffffff; width: 100%; height: 100%; border: 1px solid #94a3b8; padding: 25px;
+            display: flex; flex-direction: column; justify-content: space-between; position: relative;
+        }
+        .card-header-row { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #cbd5e1; padding-bottom: 15px; }
+        .card-avatar-lg { width: 60px; height: 60px; background: #fbcfe8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .card-header-title h4 { font-size: 13px; font-weight: 600; color: #475569; }
+        .card-header-title h3 { font-size: 15px; font-weight: 700; color: #0f172a; }
+        .gender-symbol { font-size: 18px; font-weight: bold; margin-left: auto; }
+        .gender-symbol.male { color: #2563eb; }
+        .gender-symbol.female { color: #db2777; }
+        .card-form-grid { display: flex; flex-direction: column; gap: 10px; }
+        .card-field { display: flex; align-items: center; gap: 15px; }
+        .card-field label { width: 70px; font-size: 12px; font-weight: 700; color: #1e293b; }
+        .card-input-box { flex-grow: 1; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 4px; font-size: 12px; color: #0f172a; font-family: monospace; }
+        .card-footer-row { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #cbd5e1; padding-top: 15px; }
+        .notice-text { font-size: 9px; color: #0284c7; line-height: 1.3; max-width: 220px; }
+        .card-btn-group { display: flex; gap: 10px; }
+        .btn-cancel-card, .btn-ok-card { background: #2563eb; color: white; border: none; padding: 6px 16px; border-radius: 4px; font-weight: 700; font-size: 11px; cursor: pointer; }
+        .arrow-nav-btn {
+            background: #ffffff; border: 2px solid #2563eb; color: #2563eb; width: 45px; height: 45px;
+            border-radius: 8px; font-size: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .arrow-nav-btn:hover { background: #2563eb; color: #ffffff; }
+
+        /* 4. SCHEDULES SECTION STYLES & SUB-VIEWS */
+        .content-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .filter-dropdown { padding: 5px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; outline: none; }
+        .add-sched-btn { background-color: #0b2341; color: white; border: none; padding: 8px 16px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-align: center; display: inline-block; min-width: 70px; }
+        .badge.complete { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge.delayed { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge.active-status { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+        .sched-sub-view {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            height: 100%;
+        }
+        .sched-sub-view.active {
+            display: flex;
+        }
+
+        .form-card-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .form-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0b2341;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-row label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #334155;
+        }
+        .form-row input, .form-row select {
+            padding: 10px 12px;
+            font-size: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #f8fafc;
+            outline: none;
+        }
+        .submit-new-sched-btn {
+            background-color: #0b2341;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .modal-overlay-sched {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(2px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-card-sched {
+            background: #ffffff;
+            width: 360px;
+            padding: 30px 25px;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .modal-card-sched h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .modal-actions-sched {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            justify-content: center;
+        }
+        .btn-yes-sched {
+            background-color: #0b2341;
+            color: #ffffff;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-cancel-sched {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* 5. ZONES SECTION */
+        .control-row { display: flex; justify-content: space-between; align-items: center; }
+        .priority-btn { border: 2px solid #0b2341; padding: 10px 24px; border-radius: 8px; font-size: 16px; font-weight: 700; color: #1e293b; background: #ffffff; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .dropdown-container { position: relative; z-index: 50; }
+        .dropdown-trigger { background-color: #0b2341; color: #ffffff; padding: 10px 18px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
+        .dropdown-menu {
+            position: absolute; top: 100%; right: 0; margin-top: 6px; width: 210px; background-color: #0b2341;
+            border-radius: 10px; padding: 10px; display: none; flex-direction: column; gap: 8px; box-shadow: 0 8px 20px rgba(0,0,0,0.25); border: 1px solid #1a3860;
+        }
+        .dropdown-card { background-color: #ffffff; border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+        .card-title-row { font-size: 11px; font-weight: 700; color: #1e293b; display: flex; justify-content: space-between; }
+        .card-tag { font-size: 8px; font-weight: 800; display: flex; align-items: center; gap: 4px; text-transform: uppercase; }
+        .tag-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .tag-green { color: #16a34a; } .tag-green .tag-dot { background-color: #16a34a; }
+        .tag-red { color: #dc2626; } .tag-red .tag-dot { background-color: #dc2626; }
+        .table-frame { background: linear-gradient(180deg, #0b2341 0%, #051427 100%); border-radius: 10px; padding: 25px 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.15); }
+        .priority-table { width: 100%; border-collapse: collapse; background: #ffffff; border-radius: 8px; overflow: hidden; }
+        .priority-table th { background-color: #ffffff; color: #1e293b; font-weight: 700; font-size: 13px; padding: 12px; text-align: center; border: 1px solid #cbd5e1; }
+        .priority-table td { padding: 12px; text-align: center; font-size: 12px; color: #1e293b; border: 1px solid #e2e8f0; line-height: 1.4; }
+        .cell-location { font-weight: 600; } .cell-location small { display: block; color: #64748b; font-weight: 400; }
+
+        /* 6. SETTINGS SECTION */
+        .page-header h2 { font-size: 18px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+        .page-header p { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .settings-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+        .card-panel { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 15px; }
+        .card-title { font-size: 14px; font-weight: 700; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+        .form-input { width: 100%; padding: 8px 12px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; outline: none; }
+        .update-btn { background-color: #0b2341; color: #ffffff; border: none; padding: 8px 18px; font-size: 12px; font-weight: 700; border-radius: 6px; cursor: pointer; width: max-content; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .change-pass-link { font-size: 11px; color: #2563eb; text-decoration: underline; cursor: pointer; align-self: flex-end; font-weight: 600; }
+        .toggle-group { display: flex; flex-direction: column; gap: 8px; }
+        .toggle-label { font-size: 12px; font-weight: 600; color: #1e293b; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .2s; border-radius: 22px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .slider { background-color: #2563eb; }
+        input:checked + .slider:before { transform: translateX(22px); }
+        .phone-num { font-size: 11px; color: #475569; font-weight: 600; margin-top: 5px; }
+        .modal-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 100; }
+        .modal-card { background: #ffffff; width: 380px; padding: 30px 25px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px; border: 1px solid #e2e8f0; }
+        .modal-card h3 { font-size: 16px; font-weight: 700; color: #0f172a; }
+        .modal-card.success h3 { color: #2563eb; }
+        .modal-actions { display: flex; gap: 15px; width: 100%; justify-content: center; }
+        .btn-yes { background-color: #e2e8f0; color: #1e293b; border: none; padding: 10px 30px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; flex: 1; }
+        .btn-cancel { background-color: #0b2341; color: #ffffff; border: none; padding: 10px 30px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; flex: 1; }
+        .btn-back { background-color: #0b2341; color: #ffffff; border: none; padding: 10px 30px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; max-width: 140px; }
+
+        /* 7. DATABASE SECTION */
+        .db-right-content { background-color: #e2e8f0 !important; }
+        .view-section { display: none; flex-direction: column; gap: 20px; width: 100%; height: 100%; }
+        .view-section.active-view { display: flex; }
+        .overview-cards-container { display: flex; gap: 30px; justify-content: center; align-items: center; height: 100%; }
+        .overview-card-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .overview-card {
+            width: 320px; height: 380px; background: linear-gradient(180deg, #071930 0%, #0b2341 100%);
+            border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; box-shadow: 0 8px 20px rgba(0,0,0,0.2); color: white; border: 1px solid #1e3a8a;
+        }
+        .overview-card-title { font-size: 16px; font-weight: 600; text-align: center; color: #e2e8f0; }
+        .continue-btn {
+            width: 280px; height: 50px; background: linear-gradient(180deg, #0f2744 0%, #051329 100%);
+            border: 2px solid #1e3a8a; border-radius: 12px; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 2px; cursor: pointer; box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .analytics-toolbar { display: flex; justify-content: space-between; align-items: center; }
+        .report-title-badge { background: linear-gradient(180deg, #475569 0%, #334155 100%); color: #ffffff; padding: 10px 24px; border-radius: 10px; font-size: 20px; font-weight: 700; border: 2px solid #1e293b; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .dropdown-wrapper { position: relative; }
+        .dropdown-btn { background: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .dropdown-btn::after { content: '▼'; font-size: 10px; color: #475569; }
+        .dropdown-menu-list { position: absolute; top: 105%; right: 0; width: 220px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px; box-shadow: 0 8px 16px rgba(0,0,0,0.15); display: none; flex-direction: column; z-index: 100; overflow: hidden; }
+        .dropdown-item { padding: 12px 16px; font-size: 13px; font-weight: 600; color: #334155; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
+        .dropdown-item:hover { background: #f1f5f9; color: #0b2341; }
+        .chart-card-container { background: #ffffff; border-radius: 16px; padding: 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 15px; height: 440px; }
+        .chart-card-header { font-size: 15px; font-weight: 700; color: #1e293b; }
+        .chart-svg-area { width: 100%; height: 100%; }
+        .chart-grid-line { stroke: #cbd5e1; stroke-width: 1; }
+        .chart-axis-text { font-size: 11px; fill: #475569; font-weight: 600; }
+        .line-green { stroke: #22c55e; stroke-width: 3; fill: none; }
+        .line-red { stroke: #ef4444; stroke-width: 3; fill: none; }
+        .data-point-green { fill: #22c55e; } .data-point-red { fill: #ef4444; }
+        .point-label { font-size: 11px; font-weight: 700; fill: #0f172a; }
+        .bar-red { fill: #b91c1c; rx: 10; } .bar-green { fill: #16a34a; rx: 10; }
+
+        /* 8. MAP SECTION */
+        .map-right-content { 
+            display: flex; 
+            padding: 20px; 
+            gap: 20px; 
+            background-color: #f8fafc; 
+            position: relative; 
+            overflow: hidden; 
+            flex-grow: 1;
+            height: 100%;
+        }
+
+        .map-container { 
+            flex-grow: 1; 
+            width: 100%;
+            height: 100%; 
+            background-color: #e2e8f0; 
+            border-radius: 8px; 
+            border: 1px solid #cbd5e1; 
+            position: relative; 
+            overflow: hidden; 
+            display: flex; 
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            flex-grow: 1;
+        }
+
+        .legend-panel { width: 220px; display: flex; flex-direction: column; gap: 16px; flex-shrink: 0; }
+        .legend-header-btn { height: 40px; background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%); border: 1px solid #94a3b8; border-radius: 6px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: #1e293b; }
+        .legend-item { display: flex; gap: 12px; align-items: flex-start; }
+    </style>
+</head>
+<body>
+
+    <!-- ================= 1. LOGIN SECTION ================= -->
+    <div class="app-section active-section" id="login-section">
+        <div class="login-left-banner">
+            <img src="logo1.png" alt="Barangay San Joaquin Crest" class="login-crest-logo">
+            <div class="banner-title">Barangay San Joaquin</div>
+            <div class="banner-subtitle">SMART WASTE MONITORING SYSTEM</div>
+        </div>
+        <div class="login-right-area">
+            <div class="login-card">
+                <div class="login-header">
+                    <h2>SYSTEM LOGIN</h2>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username / Email</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <input type="text" id="username" placeholder="Enter your username" value="Peter Solivan" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-container">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            <input type="password" id="password" placeholder="Enter Your Password" value="password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="sign-in-btn">Sign In</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 2. HOME SECTION ================= -->
+    <div class="app-section" id="home-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;" id="notif-btn-wrapper">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" id="notification-bell-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="notification-badge" id="global-notif-badge"></div>
+                </div>
+
+                <div style="position:relative; display:flex; align-items:center;" id="profile-btn-wrapper">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" id="profile-icon-btn"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+
+            <div class="header-popout" id="notification-popout">
+                <div class="popout-header">
+                    <span>Driver Notifications</span>
+                    <span style="font-size:10px; background:#ef4444; padding:2px 6px; border-radius:10px;">3 New</span>
+                </div>
+                <div class="notification-list">
+                    <div class="notification-item">
+                        <div class="notif-title"><span>Antonio Mendoza (Driver)</span><span class="notif-time">2 mins ago</span></div>
+                        <div class="notif-desc">Bin at Zone 1 (Villa Tupaz) is now 95% full and ready for collection dispatch.</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notif-title"><span>Mark Reyes (Driver)</span><span class="notif-time">15 mins ago</span></div>
+                        <div class="notif-desc">Completed scheduled morning route at Zone 4 San Joaquin market area.</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notif-title"><span>Maria Santos (Driver)</span><span class="notif-time">1 hour ago</span></div>
+                        <div class="notif-desc">Reported slight delay on Visitacion Street due to road maintenance obstruction.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="header-popout" id="profile-popout">
+                <div class="profile-popout-inner">
+                    <div class="profile-popout-topbar">
+                        <h4>ADMIN PROFILE MANAGEMENT</h4>
+                        <h3>Notification & Security</h3>
+                    </div>
+                    <div class="profile-main-layout">
+                        <div class="profile-left-col">
+                            <div class="profile-avatar-circle">👨‍💼</div>
+                            <div class="profile-section-block">System Settings</div>
+                            <div class="profile-section-block" style="background:#e2e8f0;">System Alert</div>
+                            <div style="display:flex; justify-content:center; width:100%; margin-top:4px;">
+                                <label class="mini-switch"><input type="checkbox" checked><span class="mini-slider"></span></label>
+                            </div>
+                            <div class="profile-section-block" style="background:#e2e8f0; font-size:10px; margin-top:5px;">Map View Default</div>
+                            <div style="display:flex; justify-content:center; width:100%;">
+                                <label class="mini-switch"><input type="checkbox" checked><span class="mini-slider"></span></label>
+                            </div>
+                        </div>
+                        <div class="profile-right-col">
+                            <div class="profile-sub-box">
+                                <span class="profile-sub-title">Personal Details</span>
+                                <div class="profile-field-group">
+                                    <label>Full Name</label>
+                                    <input type="text" class="profile-input-field" value="Peter Solivan">
+                                </div>
+                                <div class="profile-field-group">
+                                    <label>Contact</label>
+                                    <input type="text" class="profile-input-field" value="09125648964">
+                                </div>
+                                <div class="profile-field-group">
+                                    <label>Email</label>
+                                    <input type="text" class="profile-input-field" value="admin@sanjoaquin.gov">
+                                </div>
+                            </div>
+                            <div class="profile-sub-box">
+                                <span class="profile-sub-title">Role & Permission</span>
+                                <div class="profile-toggle-row"><span>View</span><label class="mini-switch"><input type="checkbox" checked><span class="mini-slider"></span></label></div>
+                                <div class="profile-toggle-row"><span>Edit</span><label class="mini-switch"><input type="checkbox" checked><span class="mini-slider"></span></label></div>
+                                <div class="profile-toggle-row"><span>Reports</span><label class="mini-switch"><input type="checkbox" checked><span class="mini-slider"></span></label></div>
+                            </div>
+                            <div class="profile-sub-box">
+                                <span class="profile-sub-title">Account Security</span>
+                                <span class="profile-action-link">🔑 Change Name</span>
+                                <span class="profile-action-link">📞 Change Contact</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="home-sidebar">
+                <img src="logo1.png" alt="Barangay San Joaquin" class="home-crest-logo">
+                <div class="sidebar-title" style="color:#ffffff; font-size:15px; font-weight:600; margin-bottom:6px;">Barangay San Joaquin</div>
+                <div class="sidebar-subtitle" style="color:#8da4c4; font-size:9px; letter-spacing:1px; text-transform:uppercase;">SMART WASTE MONITORING SYSTEM</div>
+            </div>
+
+            <div class="home-main-content">
+                <button class="btn-home" data-target="home-section">
+                    <svg style="width:26px; height:26px; fill:#334155;" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    Home
+                </button>
+
+                <div class="button-grid">
+                    <button class="menu-btn" data-target="personnels-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        Personnels
+                    </button>
+
+                    <button class="menu-btn" data-target="settings-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                        Settings
+                    </button>
+
+                    <button class="menu-btn" data-target="schedules-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                        Schedules
+                    </button>
+
+                    <button class="menu-btn" data-target="database-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg>
+                        Database
+                    </button>
+
+                    <button class="menu-btn" data-target="zones-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
+                        Zones
+                    </button>
+
+                    <button class="menu-btn" data-target="map-section">
+                        <svg class="menu-icon" style="width:22px; height:22px; fill:#334155;" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg>
+                        Map
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 3. PERSONNELS SECTION ================= -->
+    <div class="app-section" id="personnels-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button active" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button" data-target="database-section"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content">
+                <div class="view-panel active" id="view-main-list">
+                    <div class="page-title">Personnels</div>
+                    <button class="add-personnels-btn" id="open-modal-btn"><span>+ Add Personnels</span></button>
+
+                    <table class="personnel-table">
+                        <thead><tr><th>Name & ID</th><th>Role</th><th>Zones & Truck</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👨‍🦰</div><div class="user-info">Antonio Mendoza<small>ID: 45830</small></div></div></td>
+                                <td><b>Collector</b></td><td>Zone 1- Truck A</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👨‍💼</div><div class="user-info">Mark Reyes<small>ID: 45827</small></div></div></td>
+                                <td><b>Driver</b></td><td>Zone 4- Truck C</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👩‍🦰</div><div class="user-info">Maria Santos<small>ID: 45821</small></div></div></td>
+                                <td><b>Driver</b></td><td>Zone 3- Truck B</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👩</div><div class="user-info">Joy Reyes<small>ID: 45823</small></div></div></td>
+                                <td><b>Collector</b></td><td>Zone 5- Truck D</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="view-panel" id="view-updated-list">
+                    <div class="updated-list-badge">Updated List!</div>
+                    <table class="personnel-table" style="margin-top: 10px;">
+                        <thead><tr><th>Name & ID</th><th>Role</th><th>Zones & Truck</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👨‍🦰</div><div class="user-info">Antonio Mendoza<small>ID: 45830</small></div></div></td>
+                                <td><b>Driver</b></td><td>Zone 1- Truck A</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👨‍💼</div><div class="user-info">Mark Reyes<small>ID: 45827</small></div></div></td>
+                                <td><b>Driver</b></td><td>Zone 4- Truck C</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👩‍🦰</div><div class="user-info">Maria Santos<small>ID: 45828</small></div></div></td>
+                                <td><b>Collector</b></td><td>Zone 3- Truck B</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td><div class="user-cell"><div class="user-avatar">👨</div><div class="user-info">Juan Dela Cruz<small>ID: 45821</small></div></div></td>
+                                <td><b>Driver</b></td><td>Zone 2- Truck E</td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="view-panel" id="view-modal-carousel">
+                    <div class="modal-container-box">
+                        <button class="arrow-nav-btn" id="prev-card-btn">&larr;</button>
+                        <div class="personnel-card-frame">
+                            <div class="personnel-card-inner">
+                                <div class="card-header-row">
+                                    <div class="card-avatar-lg" id="card-avatar">👨</div>
+                                    <div class="card-header-title">
+                                        <h4>Barangay San Joaquin Crest</h4>
+                                        <h3>SMART WASTE MONITORING SYSTEM</h3>
+                                    </div>
+                                    <div class="gender-symbol male" id="card-gender">♂</div>
+                                </div>
+                                <div class="card-form-grid">
+                                    <div class="card-field"><label>Name & ID</label><input type="text" class="card-input-box" id="card-name" readonly></div>
+                                    <div class="card-field"><label>Role</label><input type="text" class="card-input-box" id="card-role" readonly></div>
+                                    <div class="card-field"><label>Zones</label><input type="text" class="card-input-box" id="card-zone" readonly></div>
+                                    <div class="card-field"><label>Status</label><input type="text" class="card-input-box" id="card-status" readonly></div>
+                                </div>
+                                <div class="card-footer-row">
+                                    <div class="notice-text"><b>Short Notice!</b><br>Adding This Personnel Will Make Changes To The Original List.</div>
+                                    <div class="card-btn-group">
+                                        <button class="btn-cancel-card" id="card-cancel-btn">CANCEL</button>
+                                        <button class="btn-ok-card" id="card-ok-btn">OK</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="arrow-nav-btn" id="next-card-btn">&rarr;</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 4. SCHEDULES SECTION ================= -->
+    <div class="app-section" id="schedules-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Crest Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button active" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button" data-target="database-section"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content">
+                
+                <!-- Sub-View 1: Main Schedule Table -->
+                <div class="sched-sub-view active" id="sched-main-view">
+                    <div class="content-toolbar">
+                        <select class="filter-dropdown"><option>Filter: All</option><option>Active</option><option>Completed</option></select>
+                        <button class="add-sched-btn" id="goto-form-btn"><span>+ Add Create New Schedule</span></button>
+                    </div>
+
+                    <table class="schedule-table">
+                        <thead><tr><th>Time & Date</th><th>Zones</th><th>Waste Type</th><th>Driver</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="scheduleTableBody">
+                            <tr>
+                                <td>08:00 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
+                                <td>Zone 4<br><small style="color: #64748b;">San Joaquin</small></td>
+                                <td>Non-Biodegradable</td><td>Mark Reyes</td><td><span class="badge complete">COMPLETE</span></td>
+                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td>09:30 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
+                                <td>Zone A<br><small style="color: #64748b;">Visitacion</small></td>
+                                <td>Biodegradable</td><td>Juan Dela Cruz</td><td><span class="badge complete">COMPLETE</span></td>
+                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                            <tr>
+                                <td>10:00 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
+                                <td>Zone 3<br><small style="color: #64748b;">Villa Tupaz</small></td>
+                                <td>Non-Biodegradable</td><td>Jose Rizal</td><td><span class="badge delayed">DELAYED</span></td>
+                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Sub-View 2: Create Schedule Form -->
+                <div class="sched-sub-view" id="sched-form-view">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h2 style="font-size:18px; font-weight:700; color:#0f172a;">Create New Collection Schedule</h2>
+                        <button class="add-sched-btn" id="back-to-main-btn" style="background:#64748b;">&larr; Back</button>
+                    </div>
+
+                    <div class="form-card-box">
+                        <div class="form-card-title">Schedule Information</div>
+                        
+                        <form id="newScheduleForm">
+                            <div class="form-row" style="margin-bottom: 14px;">
+                                <label for="inputTime">Time & Date</label>
+                                <input type="text" id="inputTime" placeholder="e.g. 02:00 PM, Oct 15, 2026" required>
+                            </div>
+                            <div class="form-row" style="margin-bottom: 14px;">
+                                <label for="inputZone">Zone & Location</label>
+                                <input type="text" id="inputZone" placeholder="e.g. Zone 2 - Villa Concio" required>
+                            </div>
+                            <div class="form-row" style="margin-bottom: 14px;">
+                                <label for="inputWasteType">Waste Type</label>
+                                <select id="inputWasteType">
+                                    <option value="Biodegradable">Biodegradable</option>
+                                    <option value="Non-Biodegradable">Non-Biodegradable</option>
+                                    <option value="Hazardous">Hazardous</option>
+                                </select>
+                            </div>
+                            <div class="form-row" style="margin-bottom: 14px;">
+                                <label for="inputDriver">Assigned Driver</label>
+                                <input type="text" id="inputDriver" placeholder="e.g. Antonio Mendoza" required>
+                            </div>
+                            <div class="form-row" style="margin-bottom: 20px;">
+                                <label for="inputStatus">Status</label>
+                                <select id="inputStatus">
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="COMPLETE">COMPLETE</option>
+                                    <option value="DELAYED">DELAYED</option>
+                                </select>
+                            </div>
+
+                            <button type="button" class="submit-new-sched-btn" id="triggerConfirmModalBtn">Add New Schedule</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 5. ZONES SECTION ================= -->
+    <div class="app-section" id="zones-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Crest Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button active" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button" data-target="database-section"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content">
+                <div class="control-row">
+                    <div class="priority-btn">Priority Collection List</div>
+                    <div class="dropdown-container">
+                        <button class="dropdown-trigger" id="dropdownBtn">Dispatch Queue</button>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <div class="dropdown-card"><div class="card-title-row"><span>San Joaquin Elizco</span><span>98%</span></div><div class="card-tag tag-green"><span class="tag-dot"></span>Biodegradable</div></div>
+                            <div class="dropdown-card"><div class="card-title-row"><span>Villa Tupaz II</span><span>78%</span></div><div class="card-tag tag-red"><span class="tag-dot"></span>Non-Biodegradable</div></div>
+                            <div class="dropdown-card"><div class="card-title-row"><span>Visitacion</span><span>39%</span></div><div class="card-tag tag-red"><span class="tag-dot"></span>Non-Biodegradable</div></div>
+                            <div class="dropdown-card"><div class="card-title-row"><span>San Bernardo</span><span>46%</span></div><div class="card-tag tag-green"><span class="tag-dot"></span>Biodegradable</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-frame">
+                    <table class="priority-table">
+                        <thead><tr><th>Zone/Location</th><th>Priority Reason</th><th>Assigned Personnel</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td class="cell-location">Zone 5<small>Villa Concio</small></td><td>Overflowing communal bin</td><td>Mark Reyes</td><td>High Priority</td></tr>
+                            <tr><td class="cell-location">Zone 4<small>Villa Concio</small></td><td>Market area high waste accumulation</td><td>Juan Dela Cruz</td><td>In Dispatch</td></tr>
+                            <tr><td class="cell-location">Zone 2<small>Villa Concio</small></td><td>Missed morning schedule route</td><td>Antonio Mendoza</td><td>In Dispatch</td></tr>
+                            <tr><td class="cell-location">Zone 2<small>Villa Concio</small></td><td>Blocked drainage risk, Hazardous waste</td><td>Maria Santos</td><td>Pending</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 6. SETTINGS SECTION ================= -->
+    <div class="app-section" id="settings-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Crest Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button active" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button" data-target="database-section"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content">
+                <div class="page-header">
+                    <h2>⚙ SYSTEM SETTINGS</h2>
+                    <p>Configure System, Preferences, Bin Alert And Notification</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="card-panel">
+                        <div class="card-title">👤 Account & Security</div>
+                        <div class="form-group"><label>Admin Name</label><input type="text" class="form-input" value="Admin Name"></div>
+                        <div class="form-group"><label>Password</label><input type="password" class="form-input" value="**********"></div>
+                        <button class="update-btn" id="settingsUpdateBtn">UPDATE</button>
+                        <div class="form-group" style="margin-top: 10px;"><label>New Name</label><input type="text" class="form-input"></div>
+                        <div class="form-group"><label>New Password</label><input type="password" class="form-input"></div>
+                        <span class="change-pass-link" id="changePassLink">Change Password</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card-panel">
+                            <div class="card-title">🔔 Alert Settings</div>
+                            <div class="toggle-group">
+                                <span class="toggle-label">Auto Dispatch Notification</span>
+                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                            </div>
+                        </div>
+                        <div class="card-panel">
+                            <div class="card-title">🔔 Notification & Alarm</div>
+                            <div class="toggle-group">
+                                <span class="toggle-label">SMS Alert To Drivers</span>
+                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                            </div>
+                            <div class="phone-num">Phone NO. 09125648964</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-overlay" id="confirmModal">
+                    <div class="modal-card">
+                        <h3 id="confirmModalTitle">Save Changes?</h3>
+                        <div class="modal-actions">
+                            <button class="btn-yes" id="yesBtn">Yes</button>
+                            <button class="btn-cancel" id="cancelBtn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-overlay" id="successModal">
+                    <div class="modal-card success">
+                        <h3 id="successModalTitle">Changes saved successfully!</h3>
+                        <button class="btn-back" id="backBtn">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 7. DATABASE SECTION ================= -->
+    <div class="app-section" id="database-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Crest Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button active" data-target="database-section" id="database-nav-btn"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content db-right-content">
+                <div class="view-section active-view" id="view-db-1">
+                    <div class="overview-cards-container">
+                        <div class="overview-card-wrapper">
+                            <div class="overview-card">
+                                <svg width="100%" height="220" viewBox="0 0 260 200">
+                                    <line x1="30" y1="30" x2="250" y2="30" class="chart-grid-line"/>
+                                    <line x1="30" y1="70" x2="250" y2="70" class="chart-grid-line"/>
+                                    <line x1="30" y1="110" x2="250" y2="110" class="chart-grid-line"/>
+                                    <line x1="30" y1="150" x2="250" y2="150" class="chart-grid-line"/>
+                                    <polyline points="40,140 80,110 120,95 160,80 200,65 240,40" class="line-green"/>
+                                    <circle cx="240" cy="40" r="4" class="data-point-green"/>
+                                </svg>
+                                <div class="overview-card-title">Collection Efficiency Trend</div>
+                            </div>
+                            <button class="continue-btn" id="left-continue-btn">CONTINUE</button>
+                        </div>
+
+                        <div class="overview-card-wrapper">
+                            <div class="overview-card">
+                                <svg width="100%" height="220" viewBox="0 0 260 200">
+                                    <rect x="40" y="60" width="35" height="120" class="bar-green"/>
+                                    <rect x="90" y="30" width="35" height="150" class="bar-red"/>
+                                    <rect x="140" y="80" width="35" height="100" class="bar-green"/>
+                                    <rect x="190" y="50" width="35" height="130" class="bar-red"/>
+                                </svg>
+                                <div class="overview-card-title">Waste Generation By Zone</div>
+                            </div>
+                            <button class="continue-btn" id="right-continue-btn">CONTINUE</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-2">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-2')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-3')">Last Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-4')">This Year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Collection Efficiency Trend</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">90</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">80</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">70</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">60</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="20" y="275" class="chart-axis-text">50</text>
+
+                            <polyline points="60,250 180,210 290,175" class="line-green"/>
+                            <polyline points="290,175 390,230 450,210 530,260" class="line-red"/>
+
+                            <circle cx="60" cy="250" r="5" class="data-point-green"/><text x="45" y="240" class="point-label">57%</text>
+                            <circle cx="180" cy="210" r="5" class="data-point-green"/><text x="165" y="200" class="point-label">65.5%</text>
+                            <circle cx="290" cy="175" r="5" class="data-point-green"/><text x="275" y="165" class="point-label">73.3%</text>
+                            <circle cx="390" cy="230" r="5" class="data-point-red"/>
+                            <circle cx="450" cy="210" r="5" class="data-point-red"/>
+                            <circle cx="530" cy="260" r="5" class="data-point-red"/>
+
+                            <text x="70" y="292" class="chart-axis-text" font-family="monospace">Week 1</text>
+                            <text x="210" y="292" class="chart-axis-text" font-family="monospace">Week 2</text>
+                            <text x="360" y="292" class="chart-axis-text" font-family="monospace">Week 3</text>
+                            <text x="490" y="292" class="chart-axis-text" font-family="monospace">Week 4</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-3">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-2')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-3')">Last Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-4')">This Year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Collection Efficiency Trend</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">90</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">80</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">70</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">60</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="20" y="275" class="chart-axis-text">50</text>
+
+                            <polyline points="60,250 110,230" class="line-red"/>
+                            <polyline points="110,230 200,210 290,175 390,100 470,160 550,80" class="line-green"/>
+
+                            <circle cx="60" cy="250" r="5" class="data-point-green"/><text x="45" y="240" class="point-label">57%</text>
+                            <circle cx="110" cy="230" r="5" class="data-point-red"/>
+                            <circle cx="200" cy="210" r="5" class="data-point-green"/><text x="185" y="200" class="point-label">65.5%</text>
+                            <circle cx="290" cy="175" r="5" class="data-point-green"/><text x="275" y="165" class="point-label">73.3%</text>
+                            <circle cx="390" cy="100" r="5" class="data-point-green"/>
+                            <circle cx="470" cy="160" r="5" class="data-point-green"/>
+                            <circle cx="550" cy="80" r="5" class="data-point-green"/>
+
+                            <text x="50" y="292" class="chart-axis-text" font-family="monospace">Week 1</text>
+                            <text x="135" y="292" class="chart-axis-text" font-family="monospace">Week 2</text>
+                            <text x="225" y="292" class="chart-axis-text" font-family="monospace">Week 3</text>
+                            <text x="315" y="292" class="chart-axis-text" font-family="monospace">Week 4</text>
+                            <text x="405" y="292" class="chart-axis-text" font-family="monospace">Week 5</text>
+                            <text x="495" y="292" class="chart-axis-text" font-family="monospace">Week 6</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-4">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-2')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-3')">Last Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-4')">This Year</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Collection Efficiency Trend</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">90</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">80</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">70</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">60</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="20" y="275" class="chart-axis-text">50</text>
+
+                            <polyline points="60,250 180,210 280,175" class="line-green"/>
+                            <polyline points="280,175 360,230 430,210" class="line-red"/>
+                            <polyline points="430,210 540,90" class="line-green"/>
+
+                            <circle cx="60" cy="250" r="5" class="data-point-green"/><text x="45" y="240" class="point-label">57%</text>
+                            <circle cx="180" cy="210" r="5" class="data-point-green"/><text x="165" y="200" class="point-label">65.5%</text>
+                            <circle cx="280" cy="175" r="5" class="data-point-green"/><text x="265" y="165" class="point-label">73.3%</text>
+                            <circle cx="360" cy="230" r="5" class="data-point-red"/>
+                            <circle cx="430" cy="210" r="5" class="data-point-red"/>
+                            <circle cx="540" cy="90" r="5" class="data-point-green"/>
+
+                            <text x="50" y="292" class="chart-axis-text" font-family="monospace">Jan-Mar(Q1)</text>
+                            <text x="190" y="292" class="chart-axis-text" font-family="monospace">Apr-Jun(Q2)</text>
+                            <text x="330" y="292" class="chart-axis-text" font-family="monospace">Jul-Sep(Q3)</text>
+                            <text x="460" y="292" class="chart-axis-text" font-family="monospace">Oct-Dec(Q4)</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-5">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-5')">This Week</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-6')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-7')">Last Month</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Waste Generation By Zones</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">80</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">60</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">40</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">20</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="25" y="275" class="chart-axis-text">0</text>
+
+                            <rect x="70" y="70" width="45" height="200" class="bar-red"/>
+                            <rect x="135" y="150" width="35" height="120" class="bar-red"/>
+                            <rect x="175" y="165" width="35" height="105" class="bar-green"/>
+                            <rect x="250" y="150" width="35" height="120" class="bar-red"/>
+                            <rect x="290" y="120" width="35" height="150" class="bar-green"/>
+                            <rect x="390" y="190" width="35" height="80" class="bar-red"/>
+                            <rect x="430" y="150" width="35" height="120" class="bar-green"/>
+                            <rect x="500" y="90" width="45" height="180" class="bar-green"/>
+
+                            <text x="62" y="292" class="chart-axis-text" font-family="monospace">Market Area</text>
+                            <text x="145" y="292" class="chart-axis-text" font-family="monospace">Residental</text>
+                            <text x="268" y="292" class="chart-axis-text" font-family="monospace">Public Zone</text>
+                            <text x="402" y="292" class="chart-axis-text" font-family="monospace">Public Arex</text>
+                            <text x="510" y="292" class="chart-axis-text" font-family="monospace">BMA.</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-6">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-5')">This Week</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-6')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-7')">Last Month</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Waste Generation By Zones</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">80</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">60</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">40</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">20</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="25" y="275" class="chart-axis-text">0</text>
+
+                            <rect x="70" y="140" width="40" height="130" class="bar-red"/>
+                            <rect x="115" y="120" width="40" height="150" class="bar-green"/>
+                            <rect x="210" y="115" width="45" height="155" class="bar-green"/>
+                            <rect x="300" y="90" width="40" height="180" class="bar-green"/>
+                            <rect x="390" y="190" width="40" height="80" class="bar-red"/>
+                            <rect x="435" y="110" width="40" height="160" class="bar-green"/>
+                            <rect x="510" y="90" width="40" height="180" class="bar-green"/>
+
+                            <text x="62" y="292" class="chart-axis-text" font-family="monospace">Market Area</text>
+                            <text x="145" y="292" class="chart-axis-text" font-family="monospace">Residental</text>
+                            <text x="268" y="292" class="chart-axis-text" font-family="monospace">Public Zone</text>
+                            <text x="402" y="292" class="chart-axis-text" font-family="monospace">Public Arex</text>
+                            <text x="510" y="292" class="chart-axis-text" font-family="monospace">BMA.</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="view-section" id="view-db-7">
+                    <div class="analytics-toolbar">
+                        <div class="report-title-badge">Report & Analytics</div>
+                        <div class="dropdown-wrapper">
+                            <button class="dropdown-btn">Select Data Range</button>
+                            <div class="dropdown-menu-list">
+                                <div class="dropdown-item" onclick="switchDbView('view-db-5')">This Week</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-6')">This Month</div>
+                                <div class="dropdown-item" onclick="switchDbView('view-db-7')">Last Month</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card-container">
+                        <div class="chart-card-header">Waste Generation By Zones</div>
+                        <svg class="chart-svg-area" viewBox="0 0 600 300">
+                            <line x1="50" y1="40" x2="560" y2="40" class="chart-grid-line"/><text x="20" y="45" class="chart-axis-text">100</text>
+                            <line x1="50" y1="90" x2="560" y2="90" class="chart-grid-line"/><text x="20" y="95" class="chart-axis-text">80</text>
+                            <line x1="50" y1="140" x2="560" y2="140" class="chart-grid-line"/><text x="20" y="145" class="chart-axis-text">60</text>
+                            <line x1="50" y1="190" x2="560" y2="190" class="chart-grid-line"/><text x="20" y="195" class="chart-axis-text">40</text>
+                            <line x1="50" y1="240" x2="560" y2="240" class="chart-grid-line"/><text x="20" y="245" class="chart-axis-text">20</text>
+                            <line x1="50" y1="270" x2="560" y2="270" class="chart-grid-line"/><text x="25" y="275" class="chart-axis-text">0</text>
+
+                            <rect x="70" y="150" width="35" height="120" class="bar-red"/>
+                            <rect x="110" y="165" width="35" height="105" class="bar-green"/>
+                            <rect x="180" y="110" width="40" height="160" class="bar-red"/>
+                            <rect x="270" y="80" width="45" height="190" class="bar-green"/>
+                            <rect x="380" y="125" width="40" height="145" class="bar-green"/>
+                            <rect x="490" y="80" width="45" height="190" class="bar-green"/>
+
+                            <text x="62" y="292" class="chart-axis-text" font-family="monospace">Market Area</text>
+                            <text x="145" y="292" class="chart-axis-text" font-family="monospace">Residental</text>
+                            <text x="268" y="292" class="chart-axis-text" font-family="monospace">Public Zone</text>
+                            <text x="402" y="292" class="chart-axis-text" font-family="monospace">Public Arex</text>
+                            <text x="510" y="292" class="chart-axis-text" font-family="monospace">BMA.</text>
+                        </svg>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= 8. MAP SECTION ================= -->
+    <div class="app-section" id="map-section">
+        <div class="top-bar">
+            <div class="header-title-group">
+                <span class="header-title">Barangay San Joaquin Crest</span>
+                <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
+            </div>
+            <div class="header-right">
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="notif-trigger-icon"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                    <div class="badge-dot"></div>
+                </div>
+                <div style="position:relative; display:flex; align-items:center;">
+                    <svg viewBox="0 0 24 24" style="width:22px; height:22px; fill:#ffffff; cursor:pointer;" class="profile-trigger-icon"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-body">
+            <div class="left-sidebar">
+                <div class="sidebar-header">
+                    <img src="logo1.png" alt="Barangay San Joaquin Crest Logo" class="sidebar-crest-logo">
+                </div>
+                <a href="#" class="nav-button" data-target="home-section"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg> Home</a>
+                <a href="#" class="nav-button" data-target="personnels-section"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg> Personnels</a>
+                <a href="#" class="nav-button" data-target="schedules-section"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg> Schedules</a>
+                <a href="#" class="nav-button" data-target="zones-section"><svg viewBox="0 0 24 24"><path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg> Zones</a>
+                <a href="#" class="nav-button" data-target="settings-section"><svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58z"/></svg> Settings</a>
+                <a href="#" class="nav-button" data-target="database-section"><svg viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4 8-1.79 8-4M4 9v3c0 2.21 3.58 4 8 4s8-1.79 8-4V9c0 2.21-3.58 4-8 4s-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4s8-1.79 8-4v-3c0 2.21-3.58 4-8 4s-8-1.79-8-4z"/></svg> Database</a>
+                <a href="#" class="nav-button active" data-target="map-section"><svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg> Map</a>
+            </div>
+
+            <div class="right-content map-right-content">
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/d/embed?mid=1XUwwIpXhnFiafNsBGfqigZgYOVQpQ90&hl=en&ehbc=2E312F" allowfullscreen></iframe>
+                </div>
+
+                <div class="legend-panel">
+                    <div class="legend-header-btn">
+                        <svg style="width:18px;height:18px;" viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.1V5l6 2.1V19z"/></svg>
+                        MAP
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #84cc16; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(132, 204, 22, 0.15);"><div style="width: 20px; height: 20px; background-color: #84cc16; border-radius: 50%;"></div></div>
+                        <div><h4 style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 2px;">Low/Normal (Safe Level)</h4><p style="font-size: 9px; color: #64748b; line-height: 1.2;">Bin capacity is low, under 50% full. No action needed.</p></div>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #eab308; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(234, 179, 8, 0.15);"><div style="width: 20px; height: 20px; background-color: #eab308; border-radius: 50%;"></div></div>
+                        <div><h4 style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 2px;">Medium/Warning (Half Full)</h4><p style="font-size: 9px; color: #64748b; line-height: 1.2;">Bin capacity is getting full (~50%-80%). Scheduled for pickup soon.</p></div>
+                    </div>
+                    <div class="legend-item">
+                        <div style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #dc2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(220, 38, 38, 0.15);"><div style="width: 20px; height: 20px; background-color: #dc2626; border-radius: 50%;"></div></div>
+                        <div><h4 style="font-size: 11px; font-weight: 700; color: #1e293b; margin-bottom: 2px;">Critical/High (Full/Overflowing)</h4><p style="font-size: 9px; color: #64748b; line-height: 1.2;">Bin capacity is critical (>80% or 100% full). Requires immediate collection.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= CONFIRMATION POP-OUT MODAL ================= -->
+    <div class="modal-overlay-sched" id="confirmSchedModal">
+        <div class="modal-card-sched">
+            <h3>Confirm Added Data?</h3>
+            <p style="font-size: 12px; color: #64748b; line-height: 1.4;">Are you sure you want to add this schedule entry to the system database table?</p>
+            <div class="modal-actions-sched">
+                <button class="btn-yes-sched" id="modalYesBtn">Yes</button>
+                <button class="btn-cancel-sched" id="modalCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ================= JAVASCRIPT================= -->
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active-section'));
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.classList.add('active-section');
+            }
+        }
+
+        document.querySelectorAll('[data-target]').forEach(elem => {
+            elem.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = elem.getAttribute('data-target');
+                showSection(targetId);
+            });
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showSection('home-section');
+        });
+
+        const notifPopout = document.getElementById('notification-popout');
+        const profilePopout = document.getElementById('profile-popout');
+
+        function closeAllPopouts() {
+            if (notifPopout) notifPopout.classList.remove('active');
+            if (profilePopout) profilePopout.classList.remove('active');
+        }
+
+        document.querySelectorAll('.notif-trigger-icon, #notification-bell-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isActive = notifPopout.classList.contains('active');
+                closeAllPopouts();
+                if (!isActive) notifPopout.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.profile-trigger-icon, #profile-icon-btn').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isActive = profilePopout.classList.contains('active');
+                closeAllPopouts();
+                if (!isActive) profilePopout.classList.add('active');
+            });
+        });
+
+        window.addEventListener('click', () => {
+            closeAllPopouts();
+        });
+
+        if (notifPopout) notifPopout.addEventListener('click', (e) => e.stopPropagation());
+        if (profilePopout) profilePopout.addEventListener('click', (e) => e.stopPropagation());
+
+        /* Personnels Carousel Code */
+        const personnelCards = [
+            { name: "Juan Dela Cruz A.", role: "Driver", zone: "Tupaz2 & Hernandez", status: "🟢 Active", avatar: "👨", gender: "♂", genderClass: "male" },
+            { name: "Maria Santos", role: "Driver", zone: "Visitacion & Munsod", status: "🟢 Active", avatar: "👩", gender: "♀", genderClass: "female" },
+            { name: "Mark Reyes", role: "Driver", zone: "San Bernardo", status: "🟢 Active", avatar: "👨", gender: "♂", genderClass: "male" },
+            { name: "Joy Reyes", role: "Waste Collector", zone: "Villa Concio", status: "🟢 Active", avatar: "👩", gender: "♀", genderClass: "female" }
+        ];
+        let currentCardIndex = 0;
+
+        function updateCardDisplay() {
+            const card = personnelCards[currentCardIndex];
+            document.getElementById('card-name').value = card.name;
+            document.getElementById('card-role').value = card.role;
+            document.getElementById('card-zone').value = card.zone;
+            document.getElementById('card-status').value = card.status;
+            document.getElementById('card-avatar').textContent = card.avatar;
+            const genderEl = document.getElementById('card-gender');
+            genderEl.textContent = card.gender;
+            genderEl.className = 'gender-symbol ' + card.genderClass;
+        }
+
+        function switchPersonnelView(viewId) {
+            document.querySelectorAll('#personnels-section .view-panel').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        const openModalBtn = document.getElementById('open-modal-btn');
+        if(openModalBtn) {
+            openModalBtn.addEventListener('click', () => {
+                currentCardIndex = 0;
+                updateCardDisplay();
+                switchPersonnelView('view-modal-carousel');
+            });
+        }
+
+        const prevCardBtn = document.getElementById('prev-card-btn');
+        if(prevCardBtn) {
+            prevCardBtn.addEventListener('click', () => {
+                currentCardIndex = (currentCardIndex - 1 + personnelCards.length) % personnelCards.length;
+                updateCardDisplay();
+            });
+        }
+
+        const nextCardBtn = document.getElementById('next-card-btn');
+        if(nextCardBtn) {
+            nextCardBtn.addEventListener('click', () => {
+                currentCardIndex = (currentCardIndex + 1) % personnelCards.length;
+                updateCardDisplay();
+            });
+        }
+
+        const cardCancelBtn = document.getElementById('card-cancel-btn');
+        if(cardCancelBtn) cardCancelBtn.addEventListener('click', () => { switchPersonnelView('view-main-list'); });
+
+        const cardOkBtn = document.getElementById('card-ok-btn');
+        if(cardOkBtn) cardOkBtn.addEventListener('click', () => { switchPersonnelView('view-updated-list'); });
+
+        /* Schedules JSON Data Processing */
+        function showSchedSubView(viewId) {
+            document.querySelectorAll('.sched-sub-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        document.getElementById('goto-form-btn').addEventListener('click', () => {
+            showSchedSubView('sched-form-view');
+        });
+
+        document.getElementById('back-to-main-btn').addEventListener('click', () => {
+            showSchedSubView('sched-main-view');
+        });
+
+        const confirmSchedModal = document.getElementById('confirmSchedModal');
+        const triggerConfirmModalBtn = document.getElementById('triggerConfirmModalBtn');
+        const modalCancelBtn = document.getElementById('modalCancelBtn');
+        const modalYesBtn = document.getElementById('modalYesBtn');
+
+        let pendingScheduleJSON = null;
+
+        triggerConfirmModalBtn.addEventListener('click', () => {
+            const timeVal = document.getElementById('inputTime').value.trim();
+            const zoneVal = document.getElementById('inputZone').value.trim();
+            const wasteVal = document.getElementById('inputWasteType').value;
+            const driverVal = document.getElementById('inputDriver').value.trim();
+            const statusVal = document.getElementById('inputStatus').value;
+
+            if (!timeVal || !zoneVal || !driverVal) {
+                alert("Please fill out all required schedule fields.");
+                return;
+            }
+
+            pendingScheduleJSON = {
+                time: timeVal,
+                zone: zoneVal,
+                wasteType: wasteVal,
+                driver: driverVal,
+                status: statusVal
+            };
+
+            confirmSchedModal.style.display = 'flex';
+        });
+
+        modalCancelBtn.addEventListener('click', () => {
+            confirmSchedModal.style.display = 'none';
+            pendingScheduleJSON = null;
+            showSchedSubView('sched-main-view');
+        });
+
+        modalYesBtn.addEventListener('click', () => {
+            confirmSchedModal.style.display = 'none';
+
+            if (pendingScheduleJSON) {
+                const tbody = document.getElementById('scheduleTableBody');
+                const newRow = document.createElement('tr');
+
+                let badgeClass = 'complete';
+                if (pendingScheduleJSON.status === 'DELAYED') badgeClass = 'delayed';
+                if (pendingScheduleJSON.status === 'ACTIVE') badgeClass = 'active-status';
+
+                newRow.innerHTML = `
+                    <td>${pendingScheduleJSON.time}</td>
+                    <td>${pendingScheduleJSON.zone}</td>
+                    <td>${pendingScheduleJSON.wasteType}</td>
+                    <td>${pendingScheduleJSON.driver}</td>
+                    <td><span class="badge ${badgeClass}">${pendingScheduleJSON.status}</span></td>
+                    <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                `;
+
+                tbody.insertBefore(newRow, tbody.firstChild);
+                document.getElementById('newScheduleForm').reset();
+            }
+
+            showSchedSubView('sched-main-view');
+        });
+
+        /* Zones Dropdown Code */
+        const dropdownBtn = document.getElementById('dropdownBtn');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdownMenu.style.display = dropdownMenu.style.display === 'flex' ? 'none' : 'flex';
+            });
+        }
+
+        /* Settings Modal Code */
+        const updateBtn = document.getElementById('settingsUpdateBtn');
+        const changePassLink = document.getElementById('changePassLink');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalTitle = document.getElementById('confirmModalTitle');
+        const successModal = document.getElementById('successModal');
+        const successModalTitle = document.getElementById('successModalTitle');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const backBtn = document.getElementById('backBtn');
+        let currentAction = 'update';
+
+        if (updateBtn) {
+            updateBtn.addEventListener('click', () => {
+                currentAction = 'update';
+                confirmModalTitle.textContent = 'Save Changes?';
+                confirmModal.style.display = 'flex';
+            });
+        }
+
+        if (changePassLink) {
+            changePassLink.addEventListener('click', () => {
+                currentAction = 'password';
+                confirmModalTitle.textContent = 'Confirm to change password?';
+                confirmModal.style.display = 'flex';
+            });
+        }
+
+        if (cancelBtn) cancelBtn.addEventListener('click', () => { confirmModal.style.display = 'none'; });
+
+        if (yesBtn) {
+            yesBtn.addEventListener('click', () => {
+                confirmModal.style.display = 'none';
+                if (currentAction === 'password') {
+                    successModalTitle.textContent = 'Password changed successfully!';
+                } else {
+                    successModalTitle.textContent = 'Changes saved successfully!';
+                }
+                successModal.style.display = 'flex';
+            });
+        }
+
+        if (backBtn) backBtn.addEventListener('click', () => { successModal.style.display = 'none'; });
+
+        /* Database View Switching Code */
+        function switchDbView(targetViewId) {
+            document.querySelectorAll('#database-section .view-section').forEach(v => v.classList.remove('active-view'));
+            const target = document.getElementById(targetViewId);
+            if (target) { target.classList.add('active-view'); }
+            closeAllDbDropdowns();
+        }
+
+        function closeAllDbDropdowns() {
+            document.querySelectorAll('#database-section .dropdown-menu-list').forEach(menu => {
+                menu.style.display = 'none';
+            });
+        }
+
+        const leftContinueBtn = document.getElementById('left-continue-btn');
+        if (leftContinueBtn) leftContinueBtn.addEventListener('click', () => { switchDbView('view-db-2'); });
+
+        const rightContinueBtn = document.getElementById('right-continue-btn');
+        if (rightContinueBtn) rightContinueBtn.addEventListener('click', () => { switchDbView('view-db-5'); });
+
+        const dbNavBtn = document.getElementById('database-nav-btn');
+        if (dbNavBtn) {
+            dbNavBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchDbView('view-db-1');
+            });
+        }
+
+        document.querySelectorAll('#database-section .dropdown-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = btn.nextElementSibling;
+                const isVisible = menu.style.display === 'flex';
+                closeAllDbDropdowns();
+                if (!isVisible) { menu.style.display = 'flex'; }
+            });
+        });
+
+        window.addEventListener('click', () => {
+            if (dropdownMenu) dropdownMenu.style.display = 'none';
+            closeAllDbDropdowns();
+        });
+    </script>
+
+</body>
+</html>
