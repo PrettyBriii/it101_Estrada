@@ -763,7 +763,7 @@
         }
         .arrow-nav-btn:hover { background: #2563eb; color: #ffffff; }
 
-        /* 4. SCHEDULES */
+        /* 4. SCHEDULES SECTION */
         .content-toolbar-sched {
             display: flex;
             justify-content: space-between;
@@ -841,7 +841,7 @@
             margin-top: 2px;
         }
 
-        /* Status */
+        /* Status Badge Pill Styles */
         .status-pill-exact {
             display: inline-flex;
             align-items: center;
@@ -2229,7 +2229,7 @@
 
             <div class="right-content map-right-content">
                 <div class="map-container">
-                    <iframe src="https://www.google.com/maps/d/embed?mid=1XUwwIpXhnFiafNsBGfqigZgYOVQpQ90&hl=en&ehbc=2E312F" allowfullscreen></iframe>
+                    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1XUwwIpXhnFiafNsBGfqigZgYOVQpQ90&ehbc=2E312F&noprof=1" width="640" height="480" allow fullscreen></iframe>
                 </div>
 
                 <div class="legend-panel">
@@ -2255,7 +2255,7 @@
     </div>
 
 
-    <!-- ================= POP-OUT CONFIRMATION ================= -->
+    <!-- ================= CONFIRMATION POP-OUT MODAL ================= -->
     <div class="modal-overlay-sched" id="confirmSchedModal">
         <div class="modal-card-sched">
             <h3>Confirm Added Data?</h3>
@@ -2357,7 +2357,7 @@
             menu.classList.remove('active');
         });
 
-        /* Personnels Details*/
+        /* Personnels Carousel Details */
         const personnelCards = [
             { name: "Juan Dela Cruz A.", role: "Driver", zone: "Tupaz2 & Hernandez", status: "🟢 Active", avatar: "👨", gender: "♂", genderClass: "male" },
             { name: "Maria Santos", role: "Driver", zone: "Visitacion & Munsod", status: "🟢 Active", avatar: "👩", gender: "♀", genderClass: "female" },
@@ -2414,7 +2414,7 @@
         const cardOkBtn = document.getElementById('card-ok-btn');
         if(cardOkBtn) cardOkBtn.addEventListener('click', () => { switchPersonnelView('view-updated-list'); });
 
-        /* JSON Data Schedules */
+        /* Schedules JSON Data Processing */
         function showSchedSubView(viewId) {
             document.querySelectorAll('.sched-sub-view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
