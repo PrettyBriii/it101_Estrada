@@ -22,7 +22,7 @@
             overflow: hidden;
         }
 
-        /* App Section Panels Container Frame - Expanded to fill entire screen */
+        /* Filling the entire screen */
         .app-section {
             display: none;
             width: 100%;
@@ -36,7 +36,7 @@
             display: flex;
         }
 
-        /* Top Header Bar */
+        /* Top Header */
         .top-bar {
             width: 100%;
             height: 55px;
@@ -84,7 +84,7 @@
             border-radius: 50%;
         }
 
-        /* Popout Flyout Overlays */
+        /* Popout Overlays */
         .header-popout {
             position: absolute;
             top: 55px;
@@ -329,7 +329,7 @@
             overflow: hidden;
         }
 
-        /* Left Navigation Sidebar with Logo1 at top & pushed down buttons */
+        /* Left Navigation Sidebar */
         .left-sidebar {
             width: 200px;
             background: linear-gradient(180deg, #0b2341 0%, #030a14 100%);
@@ -406,13 +406,13 @@
         }
 
         /* COMMON TABLES */
-        .personnel-table, .schedule-table, .priority-table {
+        .personnel-table, .priority-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 12px;
         }
 
-        .personnel-table th, .schedule-table th, .priority-table th {
+        .personnel-table th, .priority-table th {
             background-color: #f8fafc;
             color: #334155;
             font-weight: 700;
@@ -422,18 +422,18 @@
             border-top: 1px solid #cbd5e1;
         }
 
-        .personnel-table td, .schedule-table td, .priority-table td {
+        .personnel-table td, .priority-table td {
             padding: 12px;
             border-bottom: 1px solid #e2e8f0;
             color: #1e293b;
             vertical-align: middle;
         }
 
-        .personnel-table tr:hover, .schedule-table tr:hover {
+        .personnel-table tr:hover {
             background-color: #f8fafc;
         }
 
-        .action-icons, .action-cell {
+        .action-icons {
             display: flex;
             gap: 12px;
             align-items: center;
@@ -627,7 +627,7 @@
             box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.05);
         }
 
-        /* 3. PERSONNELS SECTION */
+        /* 3. PERSONNELS SECTION & DROPDOWN */
         .view-panel {
             display: none;
             flex-direction: column;
@@ -651,8 +651,87 @@
         .user-cell { display: flex; align-items: center; gap: 10px; }
         .user-avatar { width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; }
         .user-info small { display: block; color: #64748b; }
-        .status-pill { background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
-        .status-dot { width: 8px; height: 8px; background-color: #16a34a; border-radius: 50%; }
+
+        /* Personnels Status Dropdown */
+        .status-dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .status-pill {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #1e293b;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            user-select: none;
+        }
+
+        .status-pill:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #16a34a;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .status-arrow {
+            font-size: 10px;
+            color: #64748b;
+            margin-left: 2px;
+        }
+
+        .status-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            width: 150px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .status-menu-dropdown.active {
+            display: flex;
+        }
+
+        .status-menu-item {
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #334155;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: left;
+            background: #ffffff;
+        }
+
+        .status-menu-item:hover {
+            background: #f8fafc;
+            color: #0b2341;
+        }
+
+        .status-menu-item:last-child {
+            border-bottom: none;
+        }
         
         .modal-container-box { display: flex; align-items: center; justify-content: center; height: 100%; gap: 20px; }
         .personnel-card-frame {
@@ -684,14 +763,139 @@
         }
         .arrow-nav-btn:hover { background: #2563eb; color: #ffffff; }
 
-        /* 4. SCHEDULES SECTION STYLES & SUB-VIEWS */
-        .content-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .filter-dropdown { padding: 5px 10px; font-size: 12px; border: 1px solid #ccc; border-radius: 4px; background: #fafafa; outline: none; }
-        .add-sched-btn { background-color: #0b2341; color: white; border: none; padding: 8px 16px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-align: center; display: inline-block; min-width: 70px; }
-        .badge.complete { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .badge.delayed { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-        .badge.active-status { background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        /* 4. SCHEDULES */
+        .content-toolbar-sched {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .filter-dropdown-sched {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: #ffffff;
+            outline: none;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .add-sched-btn {
+            background-color: #0b2341;
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .add-sched-btn:hover {
+            background-color: #123563;
+        }
+
+        .schedule-table-exact {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .schedule-table-exact th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            text-align: left;
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .schedule-table-exact td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        .schedule-table-exact tr:hover {
+            background-color: #fafafa;
+        }
+
+        .cell-main {
+            font-size: 13px;
+            font-weight: 500;
+            color: #334155;
+        }
+
+        .cell-sub {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* Status */
+        .status-pill-exact {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 110px;
+        }
+
+        .status-pill-exact::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-pill-exact.status-complete {
+            background-color: #16a34a;
+        }
+
+        .status-pill-exact.status-reported {
+            background-color: #dc2626;
+        }
+
+        .status-pill-exact.status-scheduled {
+            background-color: #94a3b8;
+        }
+
+        .status-pill-exact.status-in-progress {
+            background-color: #2563eb;
+        }
+
+        .action-icon-svg {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .action-icon-svg:hover {
+            transform: scale(1.15);
+        }
+
+        .icon-edit { fill: #f97316; }
+        .icon-delete { fill: #94a3b8; }
 
         .sched-sub-view {
             display: none;
@@ -700,6 +904,7 @@
             width: 100%;
             height: 100%;
         }
+
         .sched-sub-view.active {
             display: flex;
         }
@@ -716,6 +921,7 @@
             flex-direction: column;
             gap: 16px;
         }
+
         .form-card-title {
             font-size: 16px;
             font-weight: 700;
@@ -723,16 +929,19 @@
             border-bottom: 1px solid #e2e8f0;
             padding-bottom: 10px;
         }
+
         .form-row {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
+
         .form-row label {
             font-size: 12px;
             font-weight: 600;
             color: #334155;
         }
+
         .form-row input, .form-row select {
             padding: 10px 12px;
             font-size: 13px;
@@ -741,6 +950,7 @@
             background: #f8fafc;
             outline: none;
         }
+
         .submit-new-sched-btn {
             background-color: #0b2341;
             color: #ffffff;
@@ -764,6 +974,7 @@
             justify-content: center;
             z-index: 1000;
         }
+
         .modal-card-sched {
             background: #ffffff;
             width: 360px;
@@ -777,17 +988,20 @@
             gap: 20px;
             border: 1px solid #e2e8f0;
         }
+
         .modal-card-sched h3 {
             font-size: 16px;
             font-weight: 700;
             color: #0f172a;
         }
+
         .modal-actions-sched {
             display: flex;
             gap: 15px;
             width: 100%;
             justify-content: center;
         }
+
         .btn-yes-sched {
             background-color: #0b2341;
             color: #ffffff;
@@ -799,6 +1013,7 @@
             cursor: pointer;
             flex: 1;
         }
+
         .btn-cancel-sched {
             background-color: #e2e8f0;
             color: #1e293b;
@@ -1113,7 +1328,7 @@
     <div class="app-section" id="personnels-section">
         <div class="top-bar">
             <div class="header-title-group">
-                <span class="header-title">Barangay San Joaquin</span>
+                <span class="header-title">Barangay San Joaquin Crest</span>
                 <span class="header-subtitle">SMART WASTE MONITORING SYSTEM</span>
             </div>
             <div class="header-right">
@@ -1143,7 +1358,7 @@
 
             <div class="right-content">
                 <div class="view-panel active" id="view-main-list">
-                    <div class="page-title">Personnels</div>
+                    <div class="page-title">Personels</div>
                     <button class="add-personnels-btn" id="open-modal-btn"><span>+ Add Personnels</span></button>
 
                     <table class="personnel-table">
@@ -1152,25 +1367,69 @@
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👨‍🦰</div><div class="user-info">Antonio Mendoza<small>ID: 45830</small></div></div></td>
                                 <td><b>Collector</b></td><td>Zone 1- Truck A</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td>
+                                    <div class="status-dropdown-container">
+                                        <div class="status-pill status-dropdown-trigger"><span class="status-text">Status</span> <span class="status-dot"></span> <span class="status-arrow">▼</span></div>
+                                        <div class="status-menu-dropdown">
+                                            <div class="status-menu-item">Active</div>
+                                            <div class="status-menu-item">Offline</div>
+                                            <div class="status-menu-item">In-Progress</div>
+                                            <div class="status-menu-item">On-Duty</div>
+                                            <div class="status-menu-item">Scheduled</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👨‍💼</div><div class="user-info">Mark Reyes<small>ID: 45827</small></div></div></td>
                                 <td><b>Driver</b></td><td>Zone 4- Truck C</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td>
+                                    <div class="status-dropdown-container">
+                                        <div class="status-pill status-dropdown-trigger"><span class="status-text">Status</span> <span class="status-dot"></span> <span class="status-arrow">▼</span></div>
+                                        <div class="status-menu-dropdown">
+                                            <div class="status-menu-item">Active</div>
+                                            <div class="status-menu-item">Offline</div>
+                                            <div class="status-menu-item">In-Progress</div>
+                                            <div class="status-menu-item">On-Duty</div>
+                                            <div class="status-menu-item">Scheduled</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👩‍🦰</div><div class="user-info">Maria Santos<small>ID: 45821</small></div></div></td>
                                 <td><b>Driver</b></td><td>Zone 3- Truck B</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td>
+                                    <div class="status-dropdown-container">
+                                        <div class="status-pill status-dropdown-trigger"><span class="status-text">Status</span> <span class="status-dot"></span> <span class="status-arrow">▼</span></div>
+                                        <div class="status-menu-dropdown">
+                                            <div class="status-menu-item">Active</div>
+                                            <div class="status-menu-item">Offline</div>
+                                            <div class="status-menu-item">In-Progress</div>
+                                            <div class="status-menu-item">On-Duty</div>
+                                            <div class="status-menu-item">Scheduled</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👩</div><div class="user-info">Joy Reyes<small>ID: 45823</small></div></div></td>
                                 <td><b>Collector</b></td><td>Zone 5- Truck D</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td>
+                                    <div class="status-dropdown-container">
+                                        <div class="status-pill status-dropdown-trigger"><span class="status-text">Status</span> <span class="status-dot"></span> <span class="status-arrow">▼</span></div>
+                                        <div class="status-menu-dropdown">
+                                            <div class="status-menu-item">Active</div>
+                                            <div class="status-menu-item">Offline</div>
+                                            <div class="status-menu-item">In-Progress</div>
+                                            <div class="status-menu-item">On-Duty</div>
+                                            <div class="status-menu-item">Scheduled</div>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                         </tbody>
@@ -1185,25 +1444,25 @@
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👨‍🦰</div><div class="user-info">Antonio Mendoza<small>ID: 45830</small></div></div></td>
                                 <td><b>Driver</b></td><td>Zone 1- Truck A</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Active</div></td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👨‍💼</div><div class="user-info">Mark Reyes<small>ID: 45827</small></div></div></td>
                                 <td><b>Driver</b></td><td>Zone 4- Truck C</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Active</div></td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👩‍🦰</div><div class="user-info">Maria Santos<small>ID: 45828</small></div></div></td>
                                 <td><b>Collector</b></td><td>Zone 3- Truck B</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Active</div></td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                             <tr>
                                 <td><div class="user-cell"><div class="user-avatar">👨</div><div class="user-info">Juan Dela Cruz<small>ID: 45821</small></div></div></td>
                                 <td><b>Driver</b></td><td>Zone 2- Truck E</td>
-                                <td><div class="status-pill"><div class="status-dot"></div>Status ▼</div></td>
+                                <td><div class="status-pill"><div class="status-dot"></div>Active</div></td>
                                 <td><div class="action-icons"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
                             </tr>
                         </tbody>
@@ -1280,39 +1539,150 @@
 
             <div class="right-content">
                 
-                <!-- Sub-View 1: Main Schedule Table -->
+                <!-- Schedule Table -->
                 <div class="sched-sub-view active" id="sched-main-view">
-                    <div class="content-toolbar">
-                        <select class="filter-dropdown"><option>Filter: All</option><option>Active</option><option>Completed</option></select>
-                        <button class="add-sched-btn" id="goto-form-btn"><span>+ Add Create New Schedule</span></button>
+                    <div class="content-toolbar-sched">
+                        <select class="filter-dropdown-sched" id="statusFilterDropdown">
+                            <option value="All">Filter: All</option>
+                            <option value="COMPLETE">COMPLETE</option>
+                            <option value="REPORTED">REPORTED</option>
+                            <option value="SCHEDULED">SCHEDULED</option>
+                            <option value="IN-PROGRESS">IN-PROGRESS</option>
+                        </select>
+                        <button class="add-sched-btn" id="goto-form-btn">+ Add Create New Schedule</button>
                     </div>
 
-                    <table class="schedule-table">
-                        <thead><tr><th>Time & Date</th><th>Zones</th><th>Waste Type</th><th>Driver</th><th>Status</th><th>Actions</th></tr></thead>
+                    <table class="schedule-table-exact">
+                        <thead>
+                            <tr>
+                                <th>Time & Date</th>
+                                <th>Zones</th>
+                                <th>Waste Type</th>
+                                <th>Driver</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
                         <tbody id="scheduleTableBody">
-                            <tr>
-                                <td>08:00 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
-                                <td>Zone 4<br><small style="color: #64748b;">San Joaquin</small></td>
-                                <td>Non-Biodegradable</td><td>Mark Reyes</td><td><span class="badge complete">COMPLETE</span></td>
-                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            <tr data-status="COMPLETE">
+                                <td>
+                                    <div class="cell-main">06:00 AM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 4</div>
+                                    <div class="cell-sub">San Bernardo</div>
+                                </td>
+                                <td><div class="cell-main">Biodegradable</div></td>
+                                <td><div class="cell-main">Mark Reyes</div></td>
+                                <td><span class="status-pill-exact status-complete">COMPLETE</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
-                                <td>09:30 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
-                                <td>Zone A<br><small style="color: #64748b;">Visitacion</small></td>
-                                <td>Biodegradable</td><td>Juan Dela Cruz</td><td><span class="badge complete">COMPLETE</span></td>
-                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            <tr data-status="COMPLETE">
+                                <td>
+                                    <div class="cell-main">08:30 AM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 2</div>
+                                    <div class="cell-sub">Hernandez</div>
+                                </td>
+                                <td><div class="cell-main">Biodegradable</div></td>
+                                <td><div class="cell-main">Juan Dela Cruz</div></td>
+                                <td><span class="status-pill-exact status-complete">COMPLETE</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
                             </tr>
-                            <tr>
-                                <td>10:00 AM<br><small style="color: #64748b;">Oct 12, 2026</small></td>
-                                <td>Zone 3<br><small style="color: #64748b;">Villa Tupaz</small></td>
-                                <td>Non-Biodegradable</td><td>Jose Rizal</td><td><span class="badge delayed">DELAYED</span></td>
-                                <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
+                            <tr data-status="REPORTED">
+                                <td>
+                                    <div class="cell-main">10:00 AM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 5</div>
+                                    <div class="cell-sub">Villa Concio</div>
+                                </td>
+                                <td><div class="cell-main">Non-Biodegradable</div></td>
+                                <td><div class="cell-main">Joy Reyes</div></td>
+                                <td><span class="status-pill-exact status-reported">REPORTED</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-status="SCHEDULED">
+                                <td>
+                                    <div class="cell-main">11:30 AM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 3</div>
+                                    <div class="cell-sub">Villa Munsod</div>
+                                </td>
+                                <td><div class="cell-main">Recyclable</div></td>
+                                <td><div class="cell-main">Maria Santos</div></td>
+                                <td><span class="status-pill-exact status-scheduled">SCHEDULED</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-status="COMPLETE">
+                                <td>
+                                    <div class="cell-main">12:30 PM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 2</div>
+                                    <div class="cell-sub">Villa Tupaz</div>
+                                </td>
+                                <td><div class="cell-main">Non-Biodegradable</div></td>
+                                <td><div class="cell-main">Juan Dela Cruz</div></td>
+                                <td><span class="status-pill-exact status-complete">COMPLETE</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-status="IN-PROGRESS">
+                                <td>
+                                    <div class="cell-main">01:00 PM</div>
+                                    <div class="cell-sub">Oct 12, 2026</div>
+                                </td>
+                                <td>
+                                    <div class="cell-main">Zone 3</div>
+                                    <div class="cell-sub">Visitacion</div>
+                                </td>
+                                <td><div class="cell-main">Biodegradable</div></td>
+                                <td><div class="cell-main">Maria Santos</div></td>
+                                <td><span class="status-pill-exact status-in-progress">IN-PROGRESS</span></td>
+                                <td>
+                                    <div class="action-icons">
+                                        <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                        <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Sub-View 2: Create Schedule Form -->
+                <!-- Schedule Form -->
                 <div class="sched-sub-view" id="sched-form-view">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <h2 style="font-size:18px; font-weight:700; color:#0f172a;">Create New Collection Schedule</h2>
@@ -1325,7 +1695,7 @@
                         <form id="newScheduleForm">
                             <div class="form-row" style="margin-bottom: 14px;">
                                 <label for="inputTime">Time & Date</label>
-                                <input type="text" id="inputTime" placeholder="e.g. 02:00 PM, Oct 15, 2026" required>
+                                <input type="text" id="inputTime" placeholder="e.g. 02:00 PM, Oct 12, 2026" required>
                             </div>
                             <div class="form-row" style="margin-bottom: 14px;">
                                 <label for="inputZone">Zone & Location</label>
@@ -1336,6 +1706,7 @@
                                 <select id="inputWasteType">
                                     <option value="Biodegradable">Biodegradable</option>
                                     <option value="Non-Biodegradable">Non-Biodegradable</option>
+                                    <option value="Recyclable">Recyclable</option>
                                     <option value="Hazardous">Hazardous</option>
                                 </select>
                             </div>
@@ -1346,9 +1717,10 @@
                             <div class="form-row" style="margin-bottom: 20px;">
                                 <label for="inputStatus">Status</label>
                                 <select id="inputStatus">
-                                    <option value="ACTIVE">ACTIVE</option>
                                     <option value="COMPLETE">COMPLETE</option>
-                                    <option value="DELAYED">DELAYED</option>
+                                    <option value="REPORTED">REPORTED</option>
+                                    <option value="SCHEDULED">SCHEDULED</option>
+                                    <option value="IN-PROGRESS">IN-PROGRESS</option>
                                 </select>
                             </div>
 
@@ -1361,8 +1733,7 @@
         </div>
     </div>
 
-
-    <!-- ================= 5. ZONES SECTION ================= -->
+<!-- ================= 5. ZONES SECTION ================= -->
     <div class="app-section" id="zones-section">
         <div class="top-bar">
             <div class="header-title-group">
@@ -1884,7 +2255,7 @@
     </div>
 
 
-    <!-- ================= CONFIRMATION POP-OUT MODAL ================= -->
+    <!-- ================= POP-OUT CONFIRMATION ================= -->
     <div class="modal-overlay-sched" id="confirmSchedModal">
         <div class="modal-card-sched">
             <h3>Confirm Added Data?</h3>
@@ -1897,7 +2268,7 @@
     </div>
 
 
-    <!-- ================= JAVASCRIPT================= -->
+    <!-- ================= JAVASCRIPT ================= -->
     <script>
         function showSection(sectionId) {
             document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active-section'));
@@ -1953,7 +2324,40 @@
         if (notifPopout) notifPopout.addEventListener('click', (e) => e.stopPropagation());
         if (profilePopout) profilePopout.addEventListener('click', (e) => e.stopPropagation());
 
-        /* Personnels Carousel Code */
+        /* Personnels Status Dropdown Toggle & Selection Logic */
+        document.addEventListener('click', (e) => {
+            const trigger = e.target.closest('.status-dropdown-trigger');
+            if (!trigger) {
+                document.querySelectorAll('.status-menu-dropdown').forEach(menu => {
+                    menu.classList.remove('active');
+                });
+                return;
+            }
+
+            const dropdownContainer = trigger.closest('.status-dropdown-container');
+            const menu = dropdownContainer.querySelector('.status-menu-dropdown');
+            const isOpen = menu.classList.contains('active');
+            
+            document.querySelectorAll('.status-menu-dropdown').forEach(m => m.classList.remove('active'));
+            if (!isOpen) {
+                menu.classList.add('active');
+            }
+            e.stopPropagation();
+        });
+
+        document.addEventListener('click', (e) => {
+            const item = e.target.closest('.status-menu-item');
+            if (!item) return;
+
+            const dropdownContainer = item.closest('.status-dropdown-container');
+            const statusTextSpan = dropdownContainer.querySelector('.status-text');
+            const menu = dropdownContainer.querySelector('.status-menu-dropdown');
+
+            statusTextSpan.textContent = item.textContent;
+            menu.classList.remove('active');
+        });
+
+        /* Personnels Details*/
         const personnelCards = [
             { name: "Juan Dela Cruz A.", role: "Driver", zone: "Tupaz2 & Hernandez", status: "🟢 Active", avatar: "👨", gender: "♂", genderClass: "male" },
             { name: "Maria Santos", role: "Driver", zone: "Visitacion & Munsod", status: "🟢 Active", avatar: "👩", gender: "♀", genderClass: "female" },
@@ -2010,7 +2414,7 @@
         const cardOkBtn = document.getElementById('card-ok-btn');
         if(cardOkBtn) cardOkBtn.addEventListener('click', () => { switchPersonnelView('view-updated-list'); });
 
-        /* Schedules JSON Data Processing */
+        /* JSON Data Schedules */
         function showSchedSubView(viewId) {
             document.querySelectorAll('.sched-sub-view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -2024,6 +2428,90 @@
             showSchedSubView('sched-main-view');
         });
 
+        // FILTER DROPDOWN LOGIC
+        const statusFilterDropdown = document.getElementById('statusFilterDropdown');
+        if (statusFilterDropdown) {
+            statusFilterDropdown.addEventListener('change', (e) => {
+                const selectedFilter = e.target.value;
+                const rows = document.querySelectorAll('#scheduleTableBody tr');
+
+                rows.forEach(row => {
+                    const rowStatus = row.getAttribute('data-status');
+                    if (selectedFilter === 'All' || rowStatus === selectedFilter) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // EDIT & DELETE ROW ACTIONS
+        const scheduleTableBody = document.getElementById('scheduleTableBody');
+        if (scheduleTableBody) {
+            scheduleTableBody.addEventListener('click', (e) => {
+                const btn = e.target.closest('.edit-row-btn, .delete-row-btn');
+                if (!btn) return;
+
+                const tr = btn.closest('tr');
+                if (!tr) return;
+
+                // Delete action
+                if (btn.classList.contains('delete-row-btn')) {
+                    if (confirm("Are you sure you want to remove this schedule entry?")) {
+                        tr.remove();
+                    }
+                }
+
+                // Edit action
+                if (btn.classList.contains('edit-row-btn')) {
+                    const mainTexts = tr.querySelectorAll('.cell-main');
+                    const subTexts = tr.querySelectorAll('.cell-sub');
+                    const statusPill = tr.querySelector('.status-pill-exact');
+
+                    const currentTime = mainTexts[0] ? mainTexts[0].innerText : "";
+                    const currentDate = subTexts[0] ? subTexts[0].innerText : "";
+                    const currentZone = mainTexts[1] ? mainTexts[1].innerText : "";
+                    const currentSubZone = subTexts[1] ? subTexts[1].innerText : "";
+                    const currentWaste = mainTexts[2] ? mainTexts[2].innerText : "";
+                    const currentDriver = mainTexts[3] ? mainTexts[3].innerText : "";
+                    const currentStatus = statusPill ? statusPill.innerText.trim() : "";
+
+                    const newTime = prompt("Edit Time:", currentTime);
+                    if (newTime === null) return;
+                    const newDate = prompt("Edit Date:", currentDate);
+                    if (newDate === null) return;
+                    const newZone = prompt("Edit Zone:", currentZone);
+                    if (newZone === null) return;
+                    const newSubZone = prompt("Edit Sub-location:", currentSubZone);
+                    if (newSubZone === null) return;
+                    const newWaste = prompt("Edit Waste Type:", currentWaste);
+                    if (newWaste === null) return;
+                    const newDriver = prompt("Edit Assigned Driver:", currentDriver);
+                    if (newDriver === null) return;
+                    const newStatus = prompt("Edit Status (COMPLETE, REPORTED, SCHEDULED, IN-PROGRESS):", currentStatus);
+                    if (newStatus === null) return;
+
+                    mainTexts[0].innerText = newTime;
+                    subTexts[0].innerText = newDate;
+                    mainTexts[1].innerText = newZone;
+                    subTexts[1].innerText = newSubZone;
+                    mainTexts[2].innerText = newWaste;
+                    mainTexts[3].innerText = newDriver;
+
+                    let badgeClass = 'status-complete';
+                    let statUpper = newStatus.toUpperCase().trim();
+                    if (statUpper.includes('REPORT')) badgeClass = 'status-reported';
+                    else if (statUpper.includes('SCHED')) badgeClass = 'status-scheduled';
+                    else if (statUpper.includes('PROGRESS')) badgeClass = 'status-in-progress';
+
+                    statusPill.className = `status-pill-exact ${badgeClass}`;
+                    statusPill.innerText = statUpper;
+                    tr.setAttribute('data-status', statUpper);
+                }
+            });
+        }
+
         const confirmSchedModal = document.getElementById('confirmSchedModal');
         const triggerConfirmModalBtn = document.getElementById('triggerConfirmModalBtn');
         const modalCancelBtn = document.getElementById('modalCancelBtn');
@@ -2031,63 +2519,90 @@
 
         let pendingScheduleJSON = null;
 
-        triggerConfirmModalBtn.addEventListener('click', () => {
-            const timeVal = document.getElementById('inputTime').value.trim();
-            const zoneVal = document.getElementById('inputZone').value.trim();
-            const wasteVal = document.getElementById('inputWasteType').value;
-            const driverVal = document.getElementById('inputDriver').value.trim();
-            const statusVal = document.getElementById('inputStatus').value;
+        if (triggerConfirmModalBtn) {
+            triggerConfirmModalBtn.addEventListener('click', () => {
+                const timeVal = document.getElementById('inputTime').value.trim();
+                const zoneVal = document.getElementById('inputZone').value.trim();
+                const wasteVal = document.getElementById('inputWasteType').value;
+                const driverVal = document.getElementById('inputDriver').value.trim();
+                const statusVal = document.getElementById('inputStatus').value;
 
-            if (!timeVal || !zoneVal || !driverVal) {
-                alert("Please fill out all required schedule fields.");
-                return;
-            }
+                if (!timeVal || !zoneVal || !driverVal) {
+                    alert("Please fill out all required schedule fields.");
+                    return;
+                }
 
-            pendingScheduleJSON = {
-                time: timeVal,
-                zone: zoneVal,
-                wasteType: wasteVal,
-                driver: driverVal,
-                status: statusVal
-            };
+                pendingScheduleJSON = {
+                    timeDate: timeVal,
+                    zone: zoneVal,
+                    wasteType: wasteVal,
+                    driver: driverVal,
+                    status: statusVal
+                };
 
-            confirmSchedModal.style.display = 'flex';
-        });
+                confirmSchedModal.style.display = 'flex';
+            });
+        }
 
-        modalCancelBtn.addEventListener('click', () => {
-            confirmSchedModal.style.display = 'none';
-            pendingScheduleJSON = null;
-            showSchedSubView('sched-main-view');
-        });
+        if (modalCancelBtn) {
+            modalCancelBtn.addEventListener('click', () => {
+                confirmSchedModal.style.display = 'none';
+                pendingScheduleJSON = null;
+                showSchedSubView('sched-main-view');
+            });
+        }
 
-        modalYesBtn.addEventListener('click', () => {
-            confirmSchedModal.style.display = 'none';
+        if (modalYesBtn) {
+            modalYesBtn.addEventListener('click', () => {
+                confirmSchedModal.style.display = 'none';
 
-            if (pendingScheduleJSON) {
-                const tbody = document.getElementById('scheduleTableBody');
-                const newRow = document.createElement('tr');
+                if (pendingScheduleJSON) {
+                    const tbody = document.getElementById('scheduleTableBody');
+                    const newRow = document.createElement('tr');
+                    newRow.setAttribute('data-status', pendingScheduleJSON.status);
 
-                let badgeClass = 'complete';
-                if (pendingScheduleJSON.status === 'DELAYED') badgeClass = 'delayed';
-                if (pendingScheduleJSON.status === 'ACTIVE') badgeClass = 'active-status';
+                    let badgeClass = 'status-complete';
+                    if (pendingScheduleJSON.status === 'REPORTED') badgeClass = 'status-reported';
+                    if (pendingScheduleJSON.status === 'SCHEDULED') badgeClass = 'status-scheduled';
+                    if (pendingScheduleJSON.status === 'IN-PROGRESS') badgeClass = 'status-in-progress';
 
-                newRow.innerHTML = `
-                    <td>${pendingScheduleJSON.time}</td>
-                    <td>${pendingScheduleJSON.zone}</td>
-                    <td>${pendingScheduleJSON.wasteType}</td>
-                    <td>${pendingScheduleJSON.driver}</td>
-                    <td><span class="badge ${badgeClass}">${pendingScheduleJSON.status}</span></td>
-                    <td><div class="action-cell"><svg class="action-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg><svg class="action-icon" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12z"/></svg></div></td>
-                `;
+                    const zoneParts = pendingScheduleJSON.zone.split('-');
+                    const mainZone = zoneParts[0] ? zoneParts[0].trim() : pendingScheduleJSON.zone;
+                    const subZone = zoneParts[1] ? zoneParts[1].trim() : "San Joaquin";
 
-                tbody.insertBefore(newRow, tbody.firstChild);
-                document.getElementById('newScheduleForm').reset();
-            }
+                    const timeParts = pendingScheduleJSON.timeDate.split(',');
+                    const mainTime = timeParts[0] ? timeParts[0].trim() : pendingScheduleJSON.timeDate;
+                    const subDate = timeParts[1] ? timeParts[1].trim() : "Oct 12, 2026";
 
-            showSchedSubView('sched-main-view');
-        });
+                    newRow.innerHTML = `
+                        <td>
+                            <div class="cell-main">${mainTime}</div>
+                            <div class="cell-sub">${subDate}</div>
+                        </td>
+                        <td>
+                            <div class="cell-main">${mainZone}</div>
+                            <div class="cell-sub">${subZone}</div>
+                        </td>
+                        <td><div class="cell-main">${pendingScheduleJSON.wasteType}</div></td>
+                        <td><div class="cell-main">${pendingScheduleJSON.driver}</div></td>
+                        <td><span class="status-pill-exact ${badgeClass}">${pendingScheduleJSON.status}</span></td>
+                        <td>
+                            <div class="action-icons">
+                                <svg class="action-icon-svg icon-edit edit-row-btn" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                <svg class="action-icon-svg icon-delete delete-row-btn" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                            </div>
+                        </td>
+                    `;
 
-        /* Zones Dropdown Code */
+                    tbody.insertBefore(newRow, tbody.firstChild);
+                    document.getElementById('newScheduleForm').reset();
+                }
+
+                showSchedSubView('sched-main-view');
+            });
+        }
+
+        /* Zones Dropdown */
         const dropdownBtn = document.getElementById('dropdownBtn');
         const dropdownMenu = document.getElementById('dropdownMenu');
         if (dropdownBtn && dropdownMenu) {
@@ -2097,7 +2612,7 @@
             });
         }
 
-        /* Settings Modal Code */
+        /* Settings Modal */
         const updateBtn = document.getElementById('settingsUpdateBtn');
         const changePassLink = document.getElementById('changePassLink');
         const confirmModal = document.getElementById('confirmModal');
@@ -2141,7 +2656,7 @@
 
         if (backBtn) backBtn.addEventListener('click', () => { successModal.style.display = 'none'; });
 
-        /* Database View Switching Code */
+        /* Database View Switching */
         function switchDbView(targetViewId) {
             document.querySelectorAll('#database-section .view-section').forEach(v => v.classList.remove('active-view'));
             const target = document.getElementById(targetViewId);
@@ -2187,3 +2702,4 @@
 
 </body>
 </html>
+   
